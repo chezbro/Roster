@@ -1,4 +1,3 @@
-// File: app/context/RosterContext.js
 'use client'
 import { createContext, useContext, useState, useEffect } from 'react'
 
@@ -49,20 +48,14 @@ function RosterProviderComponent({ children }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...person, userId: user.id })
       });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
       const data = await response.json();
       if (data.success) {
-        setRoster(prevRoster => [...prevRoster, data.rosterItem]);
+        setRoster(prevRoster => [...prevRoster, { ...data.rosterItem, _id: data.rosterItem._id }]);
       } else {
         throw new Error(data.message);
       }
     } catch (error) {
       console.error('Error adding to roster:', error);
-      // You might want to show an error message to the user here
     }
   }
 

@@ -1,26 +1,35 @@
-// File: app/roster/[id]/page.js
 'use client'
 import { useState, useEffect } from 'react'
-import { Box, VStack, Image, Text, Textarea, Button, useToast, Spinner, Heading, SimpleGrid, List, ListItem, ListIcon, Input, Switch, FormControl, FormLabel } from '@chakra-ui/react'
+import { Box, VStack, Image, Text, Textarea, Button, useToast, Spinner, Heading, SimpleGrid, List, ListItem, ListIcon } from '@chakra-ui/react'
 import { useRoster } from '../../context/RosterContext'
-import { MdCheckCircle, MdEdit, MdSave } from 'react-icons/md'
+import { MdCheckCircle } from 'react-icons/md'
+import { useRouter } from 'next/navigation'
 
 export default function IndividualDetails({ params }) {
   const { id } = params
   const { roster, addNote, updateRosterItem } = useRoster() || {}
   const [person, setPerson] = useState(null)
-  const [editMode, setEditMode] = useState(false)
-  const [editedPerson, setEditedPerson] = useState(null)
   const [newNote, setNewNote] = useState('')
   const toast = useToast()
+  const router = useRouter()
 
   useEffect(() => {
-    if (roster) {
-      const foundPerson = roster.find(p => p.id === parseInt(id))
-      setPerson(foundPerson)
-      setEditedPerson(foundPerson)
+    if (roster && id) {
+      const foundPerson = roster.find(p => p._id === id)
+      if (foundPerson) {
+        setPerson(foundPerson)
+      } else {
+        toast({
+          title: "Person not found",
+          description: "Unable to find the requested person in your roster.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        })
+        router.push('/roster')
+      }
     }
-  }, [roster, id])
+  }, [roster, id, toast, router])
 
   if (!roster || !person) {
     return (

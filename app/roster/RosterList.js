@@ -24,22 +24,22 @@ export default function RosterList() {
           </Tr>
         </Thead>
         <Tbody>
-          {roster.map((person, index) => (
+          {roster.map((person) => (
             <MotionTr
-              key={person.id}
+              key={person._id}
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
+              transition={{ duration: 0.3 }}
               whileHover={{ scale: 1.02 }}
               className="hover:bg-gray-50 transition-colors duration-150 ease-in-out"
             >
               <Td className="px-4 py-2">
-                <Link href={`/roster/${person.id}`}>
+                <Link href={`/roster/${person._id}`}>
                   <Image src={person.profilePicUrl} alt={person.name} boxSize="50px" borderRadius="full" />
                 </Link>
               </Td>
               <Td className="px-4 py-2">
-                <Link href={`/roster/${person.id}`}>
+                <Link href={`/roster/${person._id}`}>
                   <Text fontWeight="bold">{person.name}</Text>
                 </Link>
               </Td>
@@ -48,7 +48,7 @@ export default function RosterList() {
               <Td className="px-4 py-2">{person.lastDateLocation}</Td>
               <Td className="px-4 py-2">
                 <Button 
-                  onClick={() => removeFromRoster(person.id)} 
+                  onClick={() => removeFromRoster(person._id)} 
                   size="sm" 
                   colorScheme="red"
                   className="transition-all duration-300 ease-in-out transform hover:scale-105"
