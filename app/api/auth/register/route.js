@@ -1,4 +1,4 @@
-// app/api/auth/register/route.js
+// File: app/api/auth/register/route.js
 import { NextResponse } from 'next/server';
 import twilio from 'twilio';
 import clientPromise from '../../../lib/mongodb';
@@ -11,16 +11,20 @@ export async function POST(request) {
     
     const verificationCode = Math.floor(100000 + Math.random() * 900000);
 
-    // Log the start of MongoDB connection
-    console.log('Connecting to MongoDB...');
+    console.log(`Generated verification code for ${phoneNumber}: ${verificationCode}`);
+
     const mongoClient = await clientPromise;
     const db = mongoClient.db("rosterApp");
-    console.log('Connected to MongoDB');
-
     const usersCollection = db.collection("users");
 
-    // Log the start of user creation
-    console.log('Creating new user...');
+    // Check if user already exists
+    const existingUser = await usersCollection.findOne({ phoneNumber });
+    if (existingUser) {
+      console.log(`User with phone number ${phoneNumber} already exists`);
+      return NextResponse.json({ success: false, message: 'User already exists' }, { status: 400 });
+    }
+
+    // Create new user
     await usersCollection.insertOne({
       name,
       phoneNumber,
@@ -28,20 +32,21 @@ export async function POST(request) {
       isVerified: false,
       createdAt: new Date()
     });
-    console.log('User created successfully');
 
-    // Log the start of Twilio SMS sending
-    console.log('Sending SMS via Twilio...');
+    console.log(`User created for ${phoneNumber}`);
+
+    // Send SMS with verification code
     await client.messages.create({
       body: `Your Roster verification code is: ${verificationCode}`,
       from: process.env.TWILIO_PHONE_NUMBER,
       to: phoneNumber
     });
-    console.log('SMS sent successfully');
+
+    console.log(`SMS sent to ${phoneNumber} with verification code: ${verificationCode}`);
 
     return NextResponse.json({ success: true, message: 'Verification code sent successfully' });
   } catch (error) {
     console.error('Error in registration:', error);
-    return NextResponse.json({ success: false, message: 'Error during registration', error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, message: 'Error during registration' }, { status: 500 });
   }
 }
