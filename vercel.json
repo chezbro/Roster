@@ -1,9 +1,5 @@
 {
-    "version": 2,
-    "builds": [{ "src": "package.json", "use": "@vercel/next" }],
-    "functions": {
-      "api/auth/register/*.js": {
-        "maxDuration": 60
-      }
-    }
-  }
+    "builds": [
+        { "src": "package.json", "use": "@vercel/next" }
+    ]
+}
