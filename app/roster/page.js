@@ -1,11 +1,11 @@
 'use client'
 import { useEffect } from 'react';
-import { Box, Heading, VStack } from '@chakra-ui/react'
+import { Box, VStack } from '@chakra-ui/react'
 import { useRouter } from 'next/navigation';
 import { useRoster } from '../context/RosterContext'
 import RosterList from './RosterList'
 import AddToRosterForm from './AddToRosterForm'
-import LogoutButton from '../components/LogoutButton'
+import Navbar from '../components/Navbar'
 
 export default function RosterPage() {
   const { user } = useRoster();
@@ -22,13 +22,14 @@ export default function RosterPage() {
   }
 
   return (
-    <Box maxWidth="800px" margin="auto" p={8}>
-      <VStack spacing={8} align="stretch">
-        <Heading as="h1" size="2xl">Your Roster</Heading>
-        <LogoutButton />
-        <AddToRosterForm />
-        <RosterList />
-      </VStack>
+    <Box>
+      <Navbar />
+      <Box maxWidth="800px" margin="auto" p={8}>
+        <VStack spacing={8} align="stretch">
+          <AddToRosterForm />
+          <RosterList />
+        </VStack>
+      </Box>
     </Box>
   )
 }

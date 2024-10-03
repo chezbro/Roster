@@ -1,9 +1,9 @@
 // File: app/roster/AddToRosterForm.js
 'use client'
 import { useState } from 'react'
-import { Box, Button, FormControl, FormLabel, Input, VStack, Text, Image, Spinner, useToast, Textarea } from '@chakra-ui/react'
 import { useRoster } from '../context/RosterContext'
 import { fetchInstagramInfo } from '../services/instagramService'
+import { FaInstagram, FaMapMarkerAlt, FaTv, FaFilm, FaMusic, FaFutbol } from 'react-icons/fa'
 
 export default function AddToRosterForm() {
   const [instagramHandle, setInstagramHandle] = useState('')
@@ -13,7 +13,6 @@ export default function AddToRosterForm() {
   const [interests, setInterests] = useState({ shows: '', movies: '', music: '', sports: '' })
   const [isLoading, setIsLoading] = useState(false)
   const { addToRoster } = useRoster()
-  const toast = useToast()
 
   const handleFetchInfo = async (e) => {
     e.preventDefault()
@@ -23,13 +22,6 @@ export default function AddToRosterForm() {
       setInstagramInfo(info)
     } catch (error) {
       console.error('Error fetching Instagram info:', error)
-      toast({
-        title: "Error",
-        description: "Failed to fetch Instagram info. Please try again.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      })
     }
     setIsLoading(false)
   }
@@ -55,78 +47,95 @@ export default function AddToRosterForm() {
       setDateCount(0)
       setLastDateLocation('')
       setInterests({ shows: '', movies: '', music: '', sports: '' })
-      toast({
-        title: "Success",
-        description: "Added to your roster!",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      })
     }
   }
 
   return (
-    <Box>
-      <form onSubmit={handleFetchInfo}>
-        <VStack spacing={4} align="stretch">
-          <FormControl>
-            <FormLabel>Instagram Handle</FormLabel>
-            <Input 
-              value={instagramHandle} 
-              onChange={(e) => setInstagramHandle(e.target.value)} 
-              placeholder="@username"
-            />
-          </FormControl>
-          <Button type="submit" colorScheme="blue" isLoading={isLoading}>
-            Fetch Info
-          </Button>
-        </VStack>
-      </form>
+    <div className="w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-all duration-300 ease-in-out">
+      <div className="p-6 md:p-8 lg:p-10">
+        <h2 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-8">Add to Roster</h2>
+        
+        <form onSubmit={handleFetchInfo} className="max-w-2xl mx-auto mb-8">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="relative flex-grow">
+              <FaInstagram className="absolute top-3 left-3 text-pink-500" />
+              <input
+                type="text"
+                value={instagramHandle}
+                onChange={(e) => setInstagramHandle(e.target.value)}
+                placeholder="@username"
+                className="w-full pl-10 pr-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-500 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+            <button
+              type="submit"
+              className={`bg-pink-500 text-white py-2 px-6 rounded-md hover:bg-pink-600 transition-colors duration-300 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Fetching...' : 'Fetch Info'}
+            </button>
+          </div>
+        </form>
 
-      {instagramInfo && (
-        <Box mt={4} p={4} borderWidth={1} borderRadius="md">
-          <VStack align="start" spacing={2}>
-            <Image src={instagramInfo.profilePicUrl} alt={instagramInfo.fullName} boxSize="100px" borderRadius="full" />
-            <Text fontWeight="bold">{instagramInfo.fullName}</Text>
-            <Text>@{instagramInfo.username}</Text>
-            <Text>{instagramInfo.bio}</Text>
+        {instagramInfo && (
+          <div className="max-w-4xl mx-auto">
+            <div className="flex flex-col md:flex-row items-center mb-8">
+              <img src={instagramInfo.profilePicUrl} alt={instagramInfo.fullName} className="w-24 h-24 rounded-full mb-4 md:mb-0 md:mr-6" />
+              <div>
+                <h3 className="text-2xl font-bold text-center md:text-left">{instagramInfo.fullName}</h3>
+                <p className="text-gray-500 text-center md:text-left">@{instagramInfo.username}</p>
+              </div>
+            </div>
             
-            <FormControl>
-              <FormLabel>Number of Dates</FormLabel>
-              <Input type="number" value={dateCount} onChange={(e) => setDateCount(Number(e.target.value))} />
-            </FormControl>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Number of Dates</label>
+                <input
+                  type="number"
+                  value={dateCount}
+                  onChange={(e) => setDateCount(Number(e.target.value))}
+                  min="0"
+                  className="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-500 dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+              
+              <div className="relative">
+                <FaMapMarkerAlt className="absolute top-3 left-3 text-gray-400" />
+                <input
+                  type="text"
+                  value={lastDateLocation}
+                  onChange={(e) => setLastDateLocation(e.target.value)}
+                  placeholder="Last Date Location"
+                  className="w-full pl-10 pr-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-500 dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+              
+              {['shows', 'movies', 'music', 'sports'].map((interest) => (
+                <div key={interest} className="relative">
+                  {interest === 'shows' && <FaTv className="absolute top-3 left-3 text-gray-400" />}
+                  {interest === 'movies' && <FaFilm className="absolute top-3 left-3 text-gray-400" />}
+                  {interest === 'music' && <FaMusic className="absolute top-3 left-3 text-gray-400" />}
+                  {interest === 'sports' && <FaFutbol className="absolute top-3 left-3 text-gray-400" />}
+                  <input
+                    type="text"
+                    value={interests[interest]}
+                    onChange={(e) => setInterests({...interests, [interest]: e.target.value})}
+                    placeholder={`Favorite ${interest}`}
+                    className="w-full pl-10 pr-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-500 dark:bg-gray-700 dark:text-white"
+                  />
+                </div>
+              ))}
+            </div>
             
-            <FormControl>
-              <FormLabel>Last Date Location</FormLabel>
-              <Input value={lastDateLocation} onChange={(e) => setLastDateLocation(e.target.value)} />
-            </FormControl>
-            
-            <FormControl>
-              <FormLabel>Favorite Shows (comma-separated)</FormLabel>
-              <Input value={interests.shows} onChange={(e) => setInterests({...interests, shows: e.target.value})} />
-            </FormControl>
-            
-            <FormControl>
-              <FormLabel>Favorite Movies (comma-separated)</FormLabel>
-              <Input value={interests.movies} onChange={(e) => setInterests({...interests, movies: e.target.value})} />
-            </FormControl>
-            
-            <FormControl>
-              <FormLabel>Favorite Music (comma-separated)</FormLabel>
-              <Input value={interests.music} onChange={(e) => setInterests({...interests, music: e.target.value})} />
-            </FormControl>
-            
-            <FormControl>
-              <FormLabel>Favorite Sports (comma-separated)</FormLabel>
-              <Input value={interests.sports} onChange={(e) => setInterests({...interests, sports: e.target.value})} />
-            </FormControl>
-            
-            <Button onClick={handleAddToRoster} colorScheme="green" mt={2}>
+            <button
+              onClick={handleAddToRoster}
+              className="w-full bg-green-500 text-white py-3 rounded-md hover:bg-green-600 transition-colors duration-300 mt-8"
+            >
               Add to Roster
-            </Button>
-          </VStack>
-        </Box>
-      )}
-    </Box>
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }
