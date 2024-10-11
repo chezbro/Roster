@@ -1,13 +1,8 @@
-import withPWA from 'next-pwa'
-
-const nextConfig = withPWA({
-  dest: 'public',
-  disable: process.env.NODE_ENV === 'development',
-  register: true,
-  scope: '/app',
-  sw: 'service-worker.js',
-})({
-  // Your existing Next.js config options
-})
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+    domains: ['localhost', 'https://uftzgftoczgbafatvdbw.supabase.co'],
+  },
+};
 
 export default nextConfig;

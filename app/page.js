@@ -1,7 +1,22 @@
 import Link from 'next/link'
 import { FaHeart, FaClipboardList, FaLock } from 'react-icons/fa'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 
-export default function Home() {
+export default async function Home() {
+  const supabase = createServerComponentClient({ 
+    cookies,
+    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  })
+  
+  const { data: { session } } = await supabase.auth.getSession()
+
+  if (session) {
+    redirect('/roster')
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-500 to-red-500">
       <div className="container mx-auto px-4 py-12">

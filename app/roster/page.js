@@ -1,35 +1,20 @@
-'use client'
-import { useEffect } from 'react';
-import { Box, VStack } from '@chakra-ui/react'
-import { useRouter } from 'next/navigation';
-import { useRoster } from '../context/RosterContext'
-import RosterList from './RosterList'
-import AddToRosterForm from './AddToRosterForm'
-import Navbar from '../components/Navbar'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 
-export default function RosterPage() {
-  const { user } = useRoster();
-  const router = useRouter();
+export default async function Roster() {
+  const supabase = createServerComponentClient({ cookies })
+  const { data: { session } } = await supabase.auth.getSession()
 
-  useEffect(() => {
-    if (!user) {
-      router.push('/auth/register');
-    }
-  }, [user, router]);
-
-  if (!user) {
-    return null; // Or a loading spinner
+  if (!session) {
+    redirect('/auth')
   }
 
   return (
-    <Box>
-      <Navbar />
-      <Box maxWidth="800px" margin="auto" p={8}>
-        <VStack spacing={8} align="stretch">
-          <AddToRosterForm />
-          <RosterList />
-        </VStack>
-      </Box>
-    </Box>
+    <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-500 to-red-500 p-8">
+      <h1 className="text-4xl font-bold text-white mb-8">Welcome to Your Roster</h1>
+      <p className="text-xl text-white">You're logged in as: {session.user.email}</p>
+      {/* Add more roster content here */}
+    </div>
   )
 }
